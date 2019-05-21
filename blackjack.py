@@ -246,7 +246,7 @@ while quit == False: #At the end of each hand, player is asked if they want to Q
 			card3 = 10
 
 	#Initial hand dealing is complete.
-	#Possible scenarios are Blackjack, Split, Double, Buy.
+	#Possible options are Blackjack, Split, Double, Hit.
 
 	if blackjack == True:
 		print ("BLACKJACK! You win!")
