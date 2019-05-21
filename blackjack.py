@@ -1,8 +1,9 @@
-import random
-import time
+import random #used to generate random numbers for card dealing.
+import time #time.sleep is used while dealing is happening to add suspense.
+
 hand_number = 1
-number1 = 0
-number2 = 0
+card1 = 0
+card2 = 0
 total = 0
 blackjack = False
 answer = "none"
@@ -10,8 +11,81 @@ dealertotal = 0
 cash = 100
 bet = 0
 quit = False
+			
+#Defining functions
 
-def deal():
+#Double down option is triggered after player's initial hand.
+#Double down doubles the player's bet, and player is dealt a single additional card.
+def double():
+
+	global total
+	global dealertotal
+	answer = input("Double? (Y/N)")
+
+	if answer == "y": #Player accepts double down
+		deal_card()
+		if total > 21:
+			print ("Bust!")
+			lose()		
+		else:	
+			dealerdraw()
+			if dealertotal > 21:
+				print ("Dealer busted!")
+			elif dealertotal < 21:
+				win()
+			else:
+				print ("Tie!")	
+
+	elif answer == "n": #Player declines double down
+		hit()
+		if total == 21:
+			dealerdraw()
+			if dealertotal > 21:
+				print ("Dealer busted!")
+			elif dealertotal < 21:
+				win()
+			else:
+				print ("Tie!")	
+		elif total < 21:
+			dealerdraw()
+			if dealertotal > 21:
+				print ("Dealer busted!")
+			elif dealertotal < 21:
+				if total > dealertotal:
+					win()
+				else:
+					lose()		
+
+	else: #Player entered an invalid input
+		print ("Please answer y or n")
+	
+#Hit - Player is offered another card.
+def hit():
+	global total
+	global cash
+	while total < 21:	
+		answer = input("Buy? (Y/N)")
+		if answer == "y":
+			deal_card()
+		elif answer == "n":
+			dealerdraw()
+			if dealertotal > 21:
+				print ("Dealer busted!")
+				win()
+			elif dealertotal <= 20:
+				if total > dealertotal:
+					win()
+				else:
+					lose()
+			elif dealertotal == 21:
+				print ("Tie!")
+				return
+			return
+		else:
+			print ("Please answer y or n")
+
+#deal_card is triggered if the player accepts an additional card.
+def deal_card():
 	global total
 	print()
 	print ("Dealing.")
@@ -39,70 +113,8 @@ def deal():
 
 	total = total + number
 	print ("Total: " + str(total))
-	
-def buy():
-	global total
-	global cash
-	while total < 21:	
-		answer = input("Buy? (Y/N)")
-		if answer == "y":
-			deal()
-		elif answer == "n":
-			dealerdraw()
-			if dealertotal > 21:
-				print ("Dealer busted!")
-				win()
-			elif dealertotal <= 20:
-				if total > dealertotal:
-					win()
-				else:
-					lose()
-			elif dealertotal == 21:
-				print ("Tie!")
-				return
-			return
-		else:
-			print ("Please answer y or n")
-			
-def double():
-	global total
-	global dealertotal
-	answer = input("Double? (Y/N)")
-	if answer == "y":
-		deal()
-		if total > 21:
-			print ("Bust!")
-			lose()		
-		else:	
-			dealerdraw()
-			if dealertotal > 21:
-				print ("Dealer busted!")
-			elif dealertotal < 21:
-				win()
-			else:
-				print ("Tie!")	
-	elif answer == "n":
-		buy()
-		if total == 21:
-			dealerdraw()
-			if dealertotal > 21:
-				print ("Dealer busted!")
-			elif dealertotal < 21:
-				win()
-			else:
-				print ("Tie!")	
-		elif total < 21:
-			dealerdraw()
-			if dealertotal > 21:
-				print ("Dealer busted!")
-			elif dealertotal < 21:
-				if total > dealertotal:
-					win()
-				else:
-					lose()		
-	else:
-		print ("Please answer y or n")
-	
+
+#dealerdraw is triggered if the player decides to Stay.
 def dealerdraw():
 	global dealertotal
 	while dealertotal < 17:	
@@ -130,36 +142,39 @@ def dealerdraw():
 			print ("K")	
 			number = 10
 		print ("Dealer total: " + str(dealertotal))
-	
+
+#Player wins the hand.
 def win():
 	global cash
 	global bet
 	print ("You win!")
-	prize = int(bet) * 2
+	prize = int(bet) * 2				#Win pays out 2:1 odds.
 	print ("You won: $" + str(prize))
-	cash = int(cash) + int(prize)
+	cash = int(cash) + int(prize)		#Adding winnings to player's cash total.
 	return
-	
+
+#Player loses the hand.
 def lose():
 	global cash
 	global bet
 	print ("You lose.")
-	cash = int(cash) - int(bet)
+	cash = int(cash) - int(bet)			#Removing losing bet from player's cash total.
 	return	
 		
 #GAME START		
 
 print ("Welcome to Blackjack. Aces will be High.")
 
-while quit == False:		
+while quit == False: #At the end of each hand, player is asked if they want to Quit.
 	
 	print ("Money: $" + str(cash))
 	bet = input ("Enter your bet: $")
-	if int(bet) > cash:
+
+	#Initial hand is dealt.
+	if int(bet) > cash: #Prints error and returns to bet input.
 		print("You cannot bet more money than you have.")
 		continue
 	else:
-	
 		print()
 		print ("Dealing.")
 		time.sleep(1)
@@ -168,75 +183,83 @@ while quit == False:
 		print ("Dealing...")
 		time.sleep(1)
 		
-		number1 = random.randint(2,14)
-		number2 = random.randint(2,14)
-		number3 = random.randint(2,14)
+		card1 = random.randint(2,14) #Random numbers are generated for each card.
+		card2 = random.randint(2,14)
+		card3 = random.randint(2,14)
 		
-		dealertotal = number3
+		dealertotal = card3
 
 		print ("Your cards are: ", end='')
-		if number1 < 11:
-			print (str(number1) + ", ", end='')
-		elif number1 == 11:
-			print ("A, ", end='')
-		elif number1 == 12:
-			print ("J, ", end='')
-			number1 = 10
-		elif number1 == 13:
-			print ("Q, ", end='')
-			number1 = 10
-		elif number1 == 14:
-			print ("K, ", end='')
-			number1 = 10
-			
-		if number2 < 11:
-			print (number2)
-		elif number2 == 11:
-			print ("A")
-		elif number2 == 12:
-			print ("J")
-			number2 = 10
-		elif number2 == 13:
-			print ("Q")
-			number2 = 10
-		elif number2 == 14:
-			print ("K")	
-			number2 = 10
 
-		if number1 + number2 == 21:
+		#Prints player's first card as number or J/Q/K/Q if applicable.
+		if card1 < 11:
+			print (str(card1) + ", ", end='')
+		elif card1 == 11:
+			print ("A, ", end='')
+		elif card1 == 12:
+			print ("J, ", end='')
+			card1 = 10
+		elif card1 == 13:
+			print ("Q, ", end='')
+			card1 = 10
+		elif card1 == 14:
+			print ("K, ", end='')
+			card1 = 10
+
+		#Prints player's second card as number or J/Q/K/Q if applicable.
+		if card2 < 11:
+			print (card2)
+		elif card2 == 11:
+			print ("A")
+		elif card2 == 12:
+			print ("J")
+			card2 = 10
+		elif card2 == 13:
+			print ("Q")
+			card2 = 10
+		elif card2 == 14:
+			print ("K")	
+			card2 = 10
+
+		#Triggers a hand win for the player after the dealer's card is shown.
+		if card1 + card2 == 21:
 			blackjack = True
 		
-		total = number1 + number2
+		 #Print total of player's cards.
+		total = card1 + card2
 		print ("Total: " + str(total))
 		
-		print ("Dealer drew: ", end='')
-		if number3 < 11:
-			print (number3)
-		elif number3 == 11:
+		#Prints player's second card as number or J/Q/K/Q if applicable.
+		print ("Dealer drew: ", end='') 
+		if card3 < 11:
+			print (card3)
+		elif card3 == 11:
 			print ("A")
-		elif number3 == 12:
+		elif card3 == 12:
 			print ("J")
-			number3 = 10
-		elif number3 == 13:
+			card3 = 10
+		elif card3 == 13:
 			print ("Q")
-			number3 = 10
-		elif number3 == 14:
+			card3 = 10
+		elif card3 == 14:
 			print ("K")	
-			number3 = 10
+			card3 = 10
+
+	#Initial hand dealing is complete.
+	#Possible scenarios are Blackjack, Split, Double, Buy.
 
 	if blackjack == True:
 		print ("BLACKJACK! You win!")
-		prize = (int(bet)) + (int(bet) * 1.5)
-		print ("You won: $" + str(prize))
-		
-		cash = (int(cash) + int(bet)) + (int(bet) * 1.5)
+		prize = (int(bet)) + (int(bet) * 1.5)				#Blackjack pays out 3:2 odds.
+		print ("You won: $" + str(prize))					
+		cash = (int(cash) + int(bet)) + (int(bet) * 1.5)	#Adding winnings to player's cash total.
 		blackjack = False
 
-	elif blackjack == False:
-		if number1 == number2:
+	else:
+		if card1 == card2:
 			answer = input("Split? (Y/N) ")
 			if answer == "y":
-				print ("SPLIT")
+				print ("SPLIT") #I still need to code for this condition.
 			elif answer == "n":
 				double()
 			else:
@@ -245,7 +268,10 @@ while quit == False:
 			if 8 <= total <= 12:
 				double()
 			else:		
-				buy()	
+				hit()	
+
+	#player input for the current hand is over.
+
 	if total > 21:
 		print ("Bust!")
 		cash = int(cash) - int(bet)
@@ -253,7 +279,8 @@ while quit == False:
 		print ("21!")
 		dealerdraw()
 		
-		
+	#Hand is over.	
+
 	print ("Money: $" + str(cash))
 	answer = input("Another hand? (Y/N) ")
 	if answer == "y":
@@ -263,14 +290,3 @@ while quit == False:
 		quit = True
 	else:
 		print ("Please answer y or n ")
-
-
-
-
-
-
-
-
-
-
-
